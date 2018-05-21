@@ -1,9 +1,13 @@
 package www.xiaoyiyiyo.mybatis.proxy;
 
+import www.xiaoyiyiyo.common.util.C3p0Pool;
 import www.xiaoyiyiyo.mybatis.operate.Insert;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Created by xiaoyiyiyo on 2018/5/17.
@@ -17,12 +21,9 @@ public class AnnoMethodInvocationHandler implements InvocationHandler {
         String sql = null;
         if (method.isAnnotationPresent(Insert.class)) {
             //TODO checksql
-
+            C3p0Pool.insert(sql, args);
         }
         return null;
     }
 
-    private static void insert(String sql, Object[] parameters) {
-
-    }
 }

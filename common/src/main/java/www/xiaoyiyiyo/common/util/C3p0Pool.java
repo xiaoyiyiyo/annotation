@@ -5,10 +5,10 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.lang.reflect.Field;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -65,6 +65,85 @@ public class C3p0Pool {
             connThreadLocal.set(conn);
         }
         return conn;
+    }
+
+    public static PreparedStatement getStatement(Connection conn, String sql, Object[] args) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                ps.setObject(i + 1, args[i]);
+            }
+        }
+        return ps;
+    }
+
+    public static ResultSet getResultSet(PreparedStatement statement) throws SQLException {
+        ResultSet rs = statement.executeQuery();
+        return rs;
+    }
+
+    public static <T> List<T> selectMulti(String sql, Object[] args, Class<?> clazz) throws SQLException, IllegalAccessException, InstantiationException
+    {
+        Connection connection = getConn();
+        PreparedStatement ps = getStatement(connection, sql, args);
+        ResultSet rs = getResultSet(ps);
+        ResultSetMetaData rsmd = rs.getMetaData();
+
+        //获取结果集的元素个数
+        int colCount = rsmd.getColumnCount();
+        //返回结果的列表集合
+        List<T> list = new ArrayList<>();
+        //业务对象的属性数组
+        Field[] fields = clazz.getDeclaredFields();
+        while(rs.next()){//对每一条记录进行操作
+            T obj = (T)clazz.newInstance();//构造业务对象实体
+            //将每一个字段取出进行赋值
+            for(int i = 1;i<=colCount;i++){
+                Object value = rs.getObject(i);
+                //寻找该列对应的对象属性
+                for(int j=0;j<fields.length;j++){
+                    Field f = fields[j];
+                    //如果匹配进行赋值
+                    if(f.getName().equalsIgnoreCase(rsmd.getColumnName(i))){
+                        boolean flag = f.isAccessible();
+                        f.setAccessible(true);
+                        f.set(obj, value);
+                        f.setAccessible(flag);
+                    }
+                }
+            }
+            list.add(obj);
+        }
+
+        release(connection, ps, rs);
+        return list;
+    }
+
+    public static <T> T selectSingle(String sql, Object[] args, Class<?> clazz) throws SQLException, IllegalAccessException, InstantiationException
+    {
+        List<T> ts = selectMulti(sql, args, clazz);
+        if (ts.size() > 0) {
+            return ts.get(0);
+        }
+        return null;
+    }
+
+    public static void insert(String sql, Object[] args) throws SQLException {
+        Connection connection = getConn();
+        PreparedStatement ps = getStatement(connection, sql, args);
+        ps.execute();
+        release(connection, ps, null);
+    }
+
+    public static void update(String sql, Object[] args) throws SQLException {
+        Connection connection = getConn();
+        PreparedStatement ps = getStatement(connection, sql, args);
+        ps.executeUpdate();
+        release(connection, ps, null);
+    }
+
+    public static void delete(String sql, Object[] args) throws SQLException {
+        update(sql, args);
     }
 
     public static void release(Connection connection, Statement statement, ResultSet rs) {
