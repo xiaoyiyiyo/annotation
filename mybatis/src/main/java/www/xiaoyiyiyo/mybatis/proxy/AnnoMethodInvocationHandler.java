@@ -33,9 +33,9 @@ public class AnnoMethodInvocationHandler implements InvocationHandler {
                 //获取list中的对象类型
                 Class<?> actualClzz =
                         (Class<?>) ((ParameterizedType)(method.getGenericReturnType())).getActualTypeArguments()[0];
-                C3p0Pool.selectMulti(sql, args, actualClzz);
+                return C3p0Pool.selectMulti(sql, args, actualClzz);
             } else {
-                C3p0Pool.selectSingle(sql, args, clzz);
+                return C3p0Pool.selectSingle(sql, args, clzz);
             }
         } else if (method.isAnnotationPresent(Update.class)) {
             sql = checkSql(method.getAnnotation(Update.class).value(), "Update");
