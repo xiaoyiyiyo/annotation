@@ -12,6 +12,11 @@ import java.util.List;
 public interface SiteMapper {
 
     @Select("select * from inav_site")
-    public List<SiteDo> listSites();
+    List<SiteDo> listSites();
 
+    @Select("select * from inav_site where name = ?")
+    SiteDo getSite(String name);
+
+    @Insert("insert into inav_site(site_url, ")
+    void addSite(String name);
 }

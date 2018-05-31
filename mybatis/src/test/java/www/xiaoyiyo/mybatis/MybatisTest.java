@@ -12,12 +12,18 @@ import java.util.List;
 public class MybatisTest {
 
     @Test
-    public void findSite() {
+    public void listSites() {
         SiteMapper siteMapper = ProxyFactory.getBean(SiteMapper.class);
         List<SiteDo> sites = siteMapper.listSites();
         for (SiteDo siteDo : sites) {
             System.out.println(siteDo.getName());
         }
+    }
+
+    @Test
+    public void getSite() {
+        SiteMapper siteMapper = ProxyFactory.getBean(SiteMapper.class);
+        SiteDo site = siteMapper.
     }
 
 }
