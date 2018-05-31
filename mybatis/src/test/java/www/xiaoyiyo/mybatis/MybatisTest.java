@@ -23,7 +23,6 @@ public class MybatisTest {
     @Test
     public void getSite() {
         SiteMapper siteMapper = ProxyFactory.getBean(SiteMapper.class);
-        SiteDo site = siteMapper.
     }
 
 }
