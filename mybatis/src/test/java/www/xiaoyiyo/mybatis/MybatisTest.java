@@ -23,6 +23,8 @@ public class MybatisTest {
     @Test
     public void getSite() {
         SiteMapper siteMapper = ProxyFactory.getBean(SiteMapper.class);
+        SiteDo site = siteMapper.getSite("CSDN");
+        System.out.println(site.getSite_url());
     }
 
 }
