@@ -19,12 +19,12 @@ public interface SiteMapper {
     @Select("select * from inav_site where name = ?")
     SiteDo getSite(String name);
 
-    @Insert("insert into inav_site(site_url, name, desc) values(?, ?, ?)")
+    @Insert("insert into `inav_site` (`site_url`, `name`, `desc`) value (?, ?, ?)")
     void addSite(String siteUrl, String name, String desc);
 
     @Delete("delete from inav_site where name = ?")
     void deleteSite(String name);
 
-    @Update("update inav_site set name = ?, site_url = ?, desc = ? where name = ?")
+    @Update("update `inav_site` set `name` = ?, `site_url` = ?, `desc` = ? where `name` = ?")
     void updateSite(String newName, String siteUrl, String desc, String oldName);
 }

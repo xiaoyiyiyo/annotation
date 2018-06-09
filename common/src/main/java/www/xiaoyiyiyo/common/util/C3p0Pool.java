@@ -131,6 +131,7 @@ public class C3p0Pool {
     public static void insert(String sql, Object[] args) throws SQLException {
         Connection connection = getConn();
         PreparedStatement ps = getStatement(connection, sql, args);
+        System.out.println("======= " + sql);
         ps.execute();
         release(connection, ps, null);
     }
@@ -138,6 +139,7 @@ public class C3p0Pool {
     public static void update(String sql, Object[] args) throws SQLException {
         Connection connection = getConn();
         PreparedStatement ps = getStatement(connection, sql, args);
+        System.out.println("======= " + sql);
         ps.executeUpdate();
         release(connection, ps, null);
     }
